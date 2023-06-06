@@ -20,11 +20,16 @@
             stats.avg /= data.Length;
 
             int lowPop = stats.avg / 5;
+            int highPop = lowPop * 9;
 
             foreach (var item in data)
             {
                 if (item.attributes.value < lowPop) stats.timelowPop++;
+                if (item.attributes.value > highPop) stats.timehighPop++;
             }
+
+            stats.perclowPop = (float)stats.timelowPop / data.Length * 100;
+            stats.perchighPop = (float)stats.timehighPop / data.Length * 100;
 
             return stats;
         }
@@ -34,7 +39,8 @@
     {
         public int avg = 0;
         public int max = 0, min = 10000;
-        public int timelowPop = 0;
+        public int timelowPop = 0, timehighPop = 0;
+        public float perclowPop = 0, perchighPop = 0;
     }
 
     internal struct DataPoint

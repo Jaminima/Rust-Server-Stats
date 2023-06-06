@@ -20,7 +20,7 @@ namespace BestRust // Note: actual namespace depends on the project name.
             Console.Clear();
             foreach (var s in serverStats.Where(x=> !searcher.forceHasName || x.server.attributes.name.Contains(searcher.name)).OrderBy(x => x.stats.timelowPop).ThenByDescending(x=>x.stats.avg).Take(10))
             {
-                Console.WriteLine($"{i} - MAX {s.stats.max} - AVG {s.stats.avg} - Low Pop For {s.stats.timelowPop} - {s.server.attributes.name}");
+                Console.WriteLine($"{i} - MAX {s.stats.max} - AVG {s.stats.avg} - Low Pop {s.stats.perclowPop:00.0}% - High Pop {s.stats.perchighPop:00.0}% - {s.server.attributes.name}");
                 i++;
             }
             Console.WriteLine($"Pages Searched {searcher.page}");
