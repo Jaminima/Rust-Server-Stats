@@ -32,12 +32,20 @@ namespace BestRust // Note: actual namespace depends on the project name.
             Console.WriteLine($"Pages Searched {searcher.page}");
         }
 
+        static void SaveSearch()
+        {
+            var r = serverStats.Where(x => !searcher.forceHasName || nameIsMatch(x.server.attributes.name));
+            var rs = r.Select(x => $"{x.server.id},{x.server.attributes.name},{x.stats.max},{x.stats.avg},{x.stats.min},{x.stats.perchighPop},{x.stats.timelowPop}");
+
+            File.WriteAllLines($"Stats-{searcher.name}.csv", rs);
+        }
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Begining Rust Server Analysis");
             var t = new TimeSpan(30, 0, 0, 0);
-            searcher.name = "EU 2x";
-            searcher.forceHasName = true;
+            searcher.name = "";
+            searcher.forceHasName = false;
 
             while (searcher.GetPage(out var search))
             {
@@ -55,6 +63,8 @@ namespace BestRust // Note: actual namespace depends on the project name.
             }
 
             Display(serverStats.Count);
+
+            SaveSearch();
 
             Console.WriteLine("Done!");
 
