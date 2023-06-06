@@ -14,11 +14,11 @@ namespace BestRust // Note: actual namespace depends on the project name.
         static List<ServerWithStats> serverStats = new List<ServerWithStats>();
         static Searcher searcher = new Searcher();
 
-        static void DisplayTop()
+        static void Display(int limit = 10)
         {
             int i = 0;
             Console.Clear();
-            foreach (var s in serverStats.Where(x=> !searcher.forceHasName || x.server.attributes.name.Contains(searcher.name)).OrderBy(x => x.stats.timelowPop).ThenByDescending(x=>x.stats.avg).Take(10))
+            foreach (var s in serverStats.Where(x=> !searcher.forceHasName || x.server.attributes.name.Contains(searcher.name)).OrderBy(x => x.stats.timelowPop).ThenByDescending(x=>x.stats.avg).Take(limit))
             {
                 Console.WriteLine($"{i} - MAX {s.stats.max} - AVG {s.stats.avg} - Low Pop {s.stats.perclowPop:00.0}% - High Pop {s.stats.perchighPop:00.0}% - {s.server.attributes.name}");
                 i++;
@@ -30,7 +30,7 @@ namespace BestRust // Note: actual namespace depends on the project name.
         {
             Console.WriteLine("Hello World!");
             var t = new TimeSpan(30, 0, 0, 0);
-            searcher.name = "2x";
+            searcher.name = "EU 2x";
             searcher.forceHasName = true;
 
             while (searcher.GetPage(out var search))
@@ -45,8 +45,12 @@ namespace BestRust // Note: actual namespace depends on the project name.
                     }
                 }
 
-                DisplayTop();
+                Display();
             }
+
+            Display(serverStats.Count);
+
+            Console.WriteLine("Done!");
 
             Console.ReadLine();
         }

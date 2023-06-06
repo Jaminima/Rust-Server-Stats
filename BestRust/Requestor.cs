@@ -37,7 +37,11 @@ namespace BestRust
 
                         return DoReq(url, out result);
                     }
-                    else return false;
+                    else
+                    {
+                        Console.WriteLine(error.errors[0].detail);
+                        return false;
+                    }
                 }
 
                 result = JsonConvert.DeserializeObject<T>(body);
