@@ -28,8 +28,6 @@ namespace BestRust
 
         private SearchResult? last;
 
-        private HttpClient httpClient = new HttpClient();
-
         public bool GetPage(out SearchResult? result)
         {
             result = null;
@@ -49,56 +47,14 @@ namespace BestRust
                 url = "https://api.battlemetrics.com/servers?fields[server]=rank,name,players,maxPlayers,address,ip,port,country,location,details,status&relations[server]=game,serverGroup&filter[game]=rust";
             }
 
-            using (var request = new HttpRequestMessage(new HttpMethod("GET"), url))
-            {
-                var response = httpClient.Send(request);
+            page++;
 
-                var contentTask = response.Content.ReadAsStringAsync();
-                contentTask.Wait();
+            var b = Requestor.DoReq(url, out result);
 
-                var body = contentTask.Result;
+            last = result;
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = JsonConvert.DeserializeObject<Errors>(body);
-                    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-                    {
-                        var till = error.errors[0].meta.tryAgain - DateTime.Now;
-                        till = till.Add(new TimeSpan(1, 0, 0));
-
-                        Console.WriteLine($"Waiting {till.TotalSeconds:00}");
-                        Thread.Sleep((int)till.TotalMilliseconds);
-
-                        return GetPage(out result);
-                    }
-                    else return false;
-                }
-
-                result = JsonConvert.DeserializeObject<SearchResult>(body);
-
-                last = result;
-
-                page++;
-
-                return true;
-            }
+            return b;
         }
-    }
-    
-    internal struct Errors
-    {
-        public Error[] errors;
-    }
-
-    internal struct Error
-    {
-        public string code, title, detail;
-        public ErrorMeta meta;
-    }
-
-    internal struct ErrorMeta
-    {
-        public DateTime tryAgain;
     }
 
     internal class SearchResult
