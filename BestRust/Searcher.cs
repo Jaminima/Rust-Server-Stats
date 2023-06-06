@@ -15,8 +15,11 @@ namespace BestRust
     {
         public string name
         {
+            get { return _name; }
             set { _name = value; page = 0; }
         }
+
+        public bool forceHasName = false;
 
         private string _name = "";
 
@@ -57,16 +60,22 @@ namespace BestRust
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    var error = JsonConvert.DeserializeObject<Errors>(body);
                     if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                     {
-                        Console.WriteLine("Waiting 60");
-                        Thread.Sleep(60000);
+                        var till = error.errors[0].meta.tryAgain - DateTime.Now;
+                        till = till.Add(new TimeSpan(1, 0, 0));
+
+                        Console.WriteLine($"Waiting {till.TotalSeconds:00}");
+                        Thread.Sleep((int)till.TotalMilliseconds);
+
                         return GetPage(out result);
                     }
                     else return false;
                 }
 
                 result = JsonConvert.DeserializeObject<SearchResult>(body);
+
                 last = result;
 
                 page++;
@@ -74,6 +83,22 @@ namespace BestRust
                 return true;
             }
         }
+    }
+    
+    internal struct Errors
+    {
+        public Error[] errors;
+    }
+
+    internal struct Error
+    {
+        public string code, title, detail;
+        public ErrorMeta meta;
+    }
+
+    internal struct ErrorMeta
+    {
+        public DateTime tryAgain;
     }
 
     internal class SearchResult
