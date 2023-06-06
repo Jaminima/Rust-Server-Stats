@@ -22,7 +22,7 @@ namespace BestRust // Note: actual namespace depends on the project name.
 
         static void Display(int limit = 10)
         {
-            int i = 0;
+            int i = 1;
             Console.Clear();
             foreach (var s in serverStats.Where(x=> !searcher.forceHasName || nameIsMatch(x.server.attributes.name)).OrderBy(x => x.stats.timelowPop).ThenByDescending(x=>x.stats.avg).Take(limit))
             {

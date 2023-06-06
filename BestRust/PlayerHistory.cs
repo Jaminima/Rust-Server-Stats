@@ -8,6 +8,8 @@
         {
             var stats = new HistoryStats();
 
+            if (data.Length == 0) return stats;
+
             foreach (var item in data)
             {
                 stats.avg += item.attributes.value;
