@@ -16,24 +16,7 @@ namespace BestRust
 
             string url = $"https://api.battlemetrics.com/servers/{id}/player-count-history?start={then:yyyy-MM-dd}T00:00:00.000Z&stop={now:yyyy-MM-dd}T00:00:00.000Z&resolution=60";
 
-            using (var httpClient = new HttpClient())
-            {
-                using (var request = new HttpRequestMessage(new HttpMethod("GET"), url))
-                {
-                    var response = httpClient.Send(request);
-
-                    if (!response.IsSuccessStatusCode)
-                        return false;
-
-                    var contentTask = response.Content.ReadAsStringAsync();
-                    contentTask.Wait();
-
-                    var body = contentTask.Result;
-                    result = JsonConvert.DeserializeObject<PlayerHistory>(body);
-
-                    return true;
-                }
-            }
+            return Requestor.DoReq(url, out result);
         }
     }
 
