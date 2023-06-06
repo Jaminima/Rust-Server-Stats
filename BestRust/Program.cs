@@ -14,11 +14,17 @@ namespace BestRust // Note: actual namespace depends on the project name.
         static List<ServerWithStats> serverStats = new List<ServerWithStats>();
         static Searcher searcher = new Searcher();
 
+        static bool nameIsMatch(string name)
+        {
+            var namePart = searcher.name.Split(" ");
+            return namePart.All(s => name.Contains(s));
+        }
+
         static void Display(int limit = 10)
         {
             int i = 0;
             Console.Clear();
-            foreach (var s in serverStats.Where(x=> !searcher.forceHasName || x.server.attributes.name.Contains(searcher.name)).OrderBy(x => x.stats.timelowPop).ThenByDescending(x=>x.stats.avg).Take(limit))
+            foreach (var s in serverStats.Where(x=> !searcher.forceHasName || nameIsMatch(x.server.attributes.name)).OrderBy(x => x.stats.timelowPop).ThenByDescending(x=>x.stats.avg).Take(limit))
             {
                 Console.WriteLine($"{i} - MAX {s.stats.max} - AVG {s.stats.avg} - Low Pop {s.stats.perclowPop:00.0}% - High Pop {s.stats.perchighPop:00.0}% - {s.server.attributes.name}");
                 i++;
