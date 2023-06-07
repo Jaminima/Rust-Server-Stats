@@ -20,6 +20,7 @@ namespace BestRust
         }
 
         public bool forceHasName = false;
+        public TimeSpan historySpan;
 
         private string _name = "";
 

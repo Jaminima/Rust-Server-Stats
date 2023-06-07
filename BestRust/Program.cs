@@ -44,14 +44,40 @@ namespace BestRust // Note: actual namespace depends on the project name.
             statsWrittenOut = serverStats.Count;
         }
 
+        static void GetUserInputs()
+        {
+            Console.WriteLine("Server Name:");
+            searcher.name = Console.ReadLine();
+
+            if (searcher.name.Length > 0)
+            {
+                Console.WriteLine("Force Name Match Y/N:");
+
+                searcher.forceHasName = Console.ReadLine().ToLower() == "y";
+            }
+
+            Console.WriteLine("Days To Analyse (Default 30):");
+
+            string days = Console.ReadLine();
+
+            if (int.TryParse(days,out int d) && d>0)
+            {
+                searcher.historySpan = new TimeSpan(d, 0, 0, 0);
+            }
+            else
+            {
+                Console.WriteLine("DefaultTo 30 Days.");
+                searcher.historySpan = new TimeSpan(30, 0, 0, 0);
+            }
+        }
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Begining Rust Server Analysis");
-            var t = new TimeSpan(30, 0, 0, 0);
-            searcher.name = "Solo/Duo";
-            searcher.forceHasName = true;
+            GetUserInputs();
 
-            fileName = $"Stats-{searcher.name.Replace("/", "_")}.csv";
+            Console.WriteLine("Begining Rust Server Analysis");
+
+            fileName = $"Stats-{searcher.name.Replace("/", "_")}-{searcher.historySpan.Days}.csv";
 
             File.WriteAllText(fileName, "Id,Name,Max,Avg,Min,% High Pop,% Low Pop\n");
 
@@ -59,7 +85,7 @@ namespace BestRust // Note: actual namespace depends on the project name.
             {
                 foreach (var server in search.data)
                 {
-                    if (server.GetHistory(t, out var history))
+                    if (server.GetHistory(searcher.historySpan, out var history))
                     {
                         var stats = history.calculateStats();
 
