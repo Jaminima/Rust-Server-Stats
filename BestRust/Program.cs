@@ -12,6 +12,8 @@ namespace BestRust // Note: actual namespace depends on the project name.
         }
 
         static List<ServerWithStats> serverStats = new List<ServerWithStats>();
+        static int statsWrittenOut = 0;
+        static string fileName = "";
         static Searcher searcher = new Searcher();
 
         static bool nameIsMatch(string name)
@@ -34,18 +36,24 @@ namespace BestRust // Note: actual namespace depends on the project name.
 
         static void SaveSearch()
         {
-            var r = serverStats.Where(x => !searcher.forceHasName || nameIsMatch(x.server.attributes.name));
-            var rs = r.Select(x => $"{x.server.id},{x.server.attributes.name},{x.stats.max},{x.stats.avg},{x.stats.min},{x.stats.perchighPop},{x.stats.timelowPop}");
+            var r = serverStats.Skip(statsWrittenOut).Where(x => !searcher.forceHasName || nameIsMatch(x.server.attributes.name));
+            var rs = r.Select(x => $"{x.server.id},\"{x.server.attributes.name.Trim()}\",{x.stats.max},{x.stats.avg},{x.stats.min},{x.stats.perchighPop},{x.stats.perclowPop}");
 
-            File.WriteAllLines($"Stats-{searcher.name}.csv", rs);
+            File.AppendAllLines(fileName, rs);
+
+            statsWrittenOut = serverStats.Count;
         }
 
         static void Main(string[] args)
         {
             Console.WriteLine("Begining Rust Server Analysis");
             var t = new TimeSpan(30, 0, 0, 0);
-            searcher.name = "";
-            searcher.forceHasName = false;
+            searcher.name = "Solo/Duo";
+            searcher.forceHasName = true;
+
+            fileName = $"Stats-{searcher.name.Replace("/", "_")}.csv";
+
+            File.WriteAllText(fileName, "Id,Name,Max,Avg,Min,% High Pop,% Low Pop\n");
 
             while (searcher.GetPage(out var search))
             {
@@ -59,12 +67,12 @@ namespace BestRust // Note: actual namespace depends on the project name.
                     }
                 }
 
+                SaveSearch();
+
                 Display();
             }
 
             Display(serverStats.Count);
-
-            SaveSearch();
 
             Console.WriteLine("Done!");
 
