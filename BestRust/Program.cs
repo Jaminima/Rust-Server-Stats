@@ -66,7 +66,7 @@ namespace BestRust // Note: actual namespace depends on the project name.
             }
             else
             {
-                Console.WriteLine("DefaultTo 30 Days.");
+                Console.WriteLine("Defaulted To 30 Days.");
                 searcher.historySpan = new TimeSpan(30, 0, 0, 0);
             }
         }
