@@ -32,8 +32,11 @@ namespace BestRust
                         var till = error.errors[0].meta.tryAgain - DateTime.Now;
                         till = till.Add(new TimeSpan(1, 0, 0));
 
-                        Console.WriteLine($"Waiting {till.TotalSeconds:00}");
-                        Thread.Sleep((int)till.TotalMilliseconds);
+                        if (till.TotalMilliseconds > 0)
+                        {
+                            Console.WriteLine($"Waiting {till.TotalSeconds:00}");
+                            Thread.Sleep((int)till.TotalMilliseconds);
+                        }
 
                         return DoReq(url, out result);
                     }

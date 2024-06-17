@@ -18,6 +18,7 @@ namespace BestRust // Note: actual namespace depends on the project name.
 
         static bool nameIsMatch(string name)
         {
+            name = name.ToLower();
             var namePart = searcher.name.Split(" ");
             return namePart.All(s => name.Contains(s));
         }
